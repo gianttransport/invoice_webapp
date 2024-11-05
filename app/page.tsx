@@ -48,7 +48,7 @@ const Home = () => {
     formData.append('file', file);
 
     try {
-      const res = await fetch('http://127.0.0.1:5000/process_excel/', {
+      const res = await fetch('https://invoicegen2-58e6551905ba.herokuapp.com/process_excel/', {
         method: 'POST',
         body: formData,
         credentials: 'omit',
@@ -75,7 +75,7 @@ const Home = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://127.0.0.1:5000/send_email/', {
+      const res = await fetch('https://invoicegen2-58e6551905ba.herokuapp.com/send_email/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }, 
         body: JSON.stringify({ pdfs: pdfData }),
