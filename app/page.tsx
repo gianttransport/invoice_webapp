@@ -46,6 +46,7 @@ const Home = () => {
     setLoading(true);
     const formData = new FormData();
     formData.append('file', file);
+    
 
     try {
       const res = await fetch('https://invoicegen2-58e6551905ba.herokuapp.com/process_excel/', {
