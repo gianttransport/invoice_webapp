@@ -103,39 +103,44 @@ const Home = () => {
   const driverNames = Object.keys(pdfData);
   const totalPdfs = driverNames.length;
 
-  const PreviewNavigation = () => (
-    <div className="flex items-center justify-between mb-4 bg-gray-50 p-4 rounded-lg">
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setCurrentPreviewIndex(prev => Math.max(0, prev - 1))}
-          disabled={currentPreviewIndex === 0}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <span className="text-sm font-medium">
-          PDF {currentPreviewIndex + 1} of {totalPdfs}
-        </span>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setCurrentPreviewIndex(prev => Math.min(totalPdfs - 1, prev + 1))}
-          disabled={currentPreviewIndex === totalPdfs - 1}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
-      <div className="text-sm font-medium text-gray-600">
-        Driver: {driverNames[currentPreviewIndex]}
-      </div>
-    </div>
-  );
 
-  return (
+
+const PreviewNavigation = () => (
+  <div className="flex items-center justify-between mb-4 bg-white/50 backdrop-blur-sm p-4 rounded-lg shadow-sm">
+    <div className="flex items-center gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setCurrentPreviewIndex(prev => Math.max(0, prev - 1))}
+        disabled={currentPreviewIndex === 0}
+        className="hover:bg-indigo-50"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </Button>
+      <span className="text-sm font-medium text-indigo-900">
+        PDF {currentPreviewIndex + 1} of {totalPdfs}
+      </span>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setCurrentPreviewIndex(prev => Math.min(totalPdfs - 1, prev + 1))}
+        disabled={currentPreviewIndex === totalPdfs - 1}
+        className="hover:bg-indigo-50"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </Button>
+    </div>
+    <div className="text-sm font-medium text-indigo-900">
+      Driver: {driverNames[currentPreviewIndex]}
+    </div>
+  </div>
+);
+
+return (
+  <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <Card className="w-full">
-        <CardHeader>
+      <Card className="w-full border-0 shadow-xl bg-white/80 backdrop-blur-lg">
+        <CardHeader className="border-b bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-lg">
           <CardTitle className="text-2xl flex items-center gap-2">
             {step === 'upload' ? (
               <>
@@ -149,7 +154,7 @@ const Home = () => {
               </>
             )}
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-indigo-100">
             {step === 'upload' 
               ? "Upload a CSV file to generate paystubs for your drivers"
               : `Reviewing ${totalPdfs} generated paystubs`
@@ -157,13 +162,13 @@ const Home = () => {
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="p-6">
           {error && (
-            <Alert className={`mb-4 ${error.startsWith('success:') ? 'bg-green-50' : 'bg-red-50'}`}>
-              <AlertTitle>
+            <Alert className={`mb-4 ${error.startsWith('success:') ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+              <AlertTitle className={error.startsWith('success:') ? 'text-green-800' : 'text-red-800'}>
                 {error.startsWith('success:') ? 'Success' : 'Error'}
               </AlertTitle>
-              <AlertDescription>
+              <AlertDescription className={error.startsWith('success:') ? 'text-green-700' : 'text-red-700'}>
                 {error.replace('success:', '')}
               </AlertDescription>
             </Alert>
@@ -176,12 +181,12 @@ const Home = () => {
                   type="file"
                   accept=".xlsx"
                   onChange={handleFileChange}
-                  className="flex-1"
+                  className="flex-1 border-indigo-200 focus:ring-indigo-500"
                 />
                 <Button 
                   type="submit" 
                   disabled={loading || !file}
-                  className="min-w-[140px]"
+                  className="min-w-[140px] bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md"
                 >
                   {loading ? (
                     <>
@@ -200,13 +205,17 @@ const Home = () => {
           ) : (
             <div className="space-y-4">
               <Tabs defaultValue="preview" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="preview">Single View</TabsTrigger>
-                  <TabsTrigger value="list">List View</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 bg-indigo-100">
+                  <TabsTrigger value="preview" className="data-[state=active]:bg-white data-[state=active]:text-indigo-700">
+                    Single View
+                  </TabsTrigger>
+                  <TabsTrigger value="list" className="data-[state=active]:bg-white data-[state=active]:text-indigo-700">
+                    List View
+                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value="preview" className="space-y-4">
                   <PreviewNavigation />
-                  <div className="border rounded-lg overflow-hidden bg-white">
+                  <div className="border rounded-lg overflow-hidden bg-white shadow-md">
                     <iframe
                       src={`data:application/pdf;base64,${pdfData[driverNames[currentPreviewIndex]]}`}
                       className="w-full h-[700px]"
@@ -215,11 +224,11 @@ const Home = () => {
                   </div>
                 </TabsContent>
                 <TabsContent value="list">
-                  <div className="space-y-4 max-h-[700px] overflow-y-auto">
+                  <div className="space-y-4 max-h-[700px] overflow-y-auto pr-2">
                     {driverNames.map((driverName, index) => (
-                      <Card key={driverName} className="overflow-hidden">
-                        <CardHeader className="py-3">
-                          <CardTitle className="text-lg">
+                      <Card key={driverName} className="overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                        <CardHeader className="py-3 bg-gradient-to-r from-indigo-50 to-purple-50">
+                          <CardTitle className="text-lg text-indigo-900">
                             {driverName} (PDF {index + 1})
                           </CardTitle>
                         </CardHeader>
@@ -240,11 +249,12 @@ const Home = () => {
         </CardContent>
 
         {step === 'preview' && (
-          <CardFooter className="flex justify-between">
+          <CardFooter className="flex justify-between p-6 border-t bg-gradient-to-r from-indigo-50 to-purple-50">
             <Button 
-              variant="outline" 
+              variant="outline"
               onClick={() => setStep('upload')}
               disabled={loading}
+              className="border-indigo-300 hover:bg-indigo-50 text-indigo-700"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back
@@ -252,6 +262,7 @@ const Home = () => {
             <Button 
               onClick={handleConfirm}
               disabled={loading}
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md"
             >
               {loading ? (
                 <>
@@ -269,7 +280,8 @@ const Home = () => {
         )}
       </Card>
     </div>
-  );
+  </div>
+);
 };
 
 export default Home;
