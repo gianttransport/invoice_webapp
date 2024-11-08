@@ -137,150 +137,159 @@ const PreviewNavigation = () => (
 );
 
 return (
-  <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <Card className="w-full border-0 shadow-xl bg-white/80 backdrop-blur-lg">
-        <CardHeader className="border-b bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-lg">
-          <CardTitle className="text-2xl flex items-center gap-2">
-            {step === 'upload' ? (
+  <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+  <div className="container mx-auto px-4 py-8 max-w-5xl">
+    <Card className="w-full border border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.3)] bg-white/80 backdrop-blur-xl relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-cyan-500/5" />
+      
+      <CardHeader className="border-b bg-gradient-to-r from-gray-800 to-slate-700 text-white rounded-t-lg relative p-8">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400 to-transparent" />
+        <CardTitle className="text-3xl flex items-center gap-3 font-bold">
+          {step === 'upload' ? (
+            <>
+              <FileText className="h-8 w-8 text-blue-400" />
+              Paystub Generator
+            </>
+          ) : (
+            <>
+              <Mail className="h-8 w-8 text-blue-400" />
+              Preview & Send Paystubs
+            </>
+          )}
+        </CardTitle>
+        <CardDescription className="text-gray-300 text-lg mt-2">
+          {step === 'upload' 
+            ? "Upload a CSV file to generate paystubs for your drivers"
+            : `Reviewing ${totalPdfs} generated paystubs`
+          }
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent className="p-8 relative">
+        {error && (
+          <Alert className={`mb-6 ${error.startsWith('success:') ? 'bg-blue-50 border-blue-200 shadow-lg shadow-blue-500/10' : 'bg-red-50 border-red-200'}`}>
+            <AlertTitle className={`text-lg ${error.startsWith('success:') ? 'text-blue-800' : 'text-red-800'}`}>
+              {error.startsWith('success:') ? 'Success' : 'Error'}
+            </AlertTitle>
+            <AlertDescription className={`text-base ${error.startsWith('success:') ? 'text-blue-700' : 'text-red-700'}`}>
+              {error.replace('success:', '')}
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {step === 'upload' ? (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="flex items-center gap-4">
+              <Input
+                type="file"
+                accept=".xlsx"
+                onChange={handleFileChange}
+                className="flex-1 border-gray-200 focus:border-blue-500 focus:ring-blue-500/30 shadow-sm text-lg py-6"
+              />
+              <Button 
+                type="submit" 
+                disabled={loading || !file}
+                className="min-w-[160px] h-14 bg-gradient-to-r from-gray-700 to-slate-600 hover:from-gray-600 hover:to-slate-500 text-white shadow-lg shadow-blue-500/20 transition-all hover:shadow-blue-500/30 text-lg"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Processing
+                  </>
+                ) : (
+                  <>
+                    <Upload className="mr-2 h-5 w-5" />
+                    Process CSV
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        ) : (
+          <div className="space-y-6">
+            <Tabs defaultValue="preview" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 bg-gray-50 p-0.5 max-w-md mx-auto rounded-lg">
+                <TabsTrigger value="preview" className="data-[state=active]:bg-white data-[state=active]:text-gray-700 data-[state=active]:shadow-md text-gray-600 text-base py-2">
+                  Single View
+                </TabsTrigger>
+                <TabsTrigger value="list" className="data-[state=active]:bg-white data-[state=active]:text-gray-700 data-[state=active]:shadow-md text-gray-600 text-base py-2">
+                  List View
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="preview" className="space-y-4">
+                <PreviewNavigation />
+                <div className="border border-blue-200 rounded-lg overflow-hidden bg-white shadow-xl shadow-blue-500/20">
+                  <iframe
+                    src={`data:application/pdf;base64,${pdfData[driverNames[currentPreviewIndex]]}`}
+                    className="w-full h-[800px]"
+                    title={`PDF Preview - ${driverNames[currentPreviewIndex]}`}
+                  />
+                </div>
+              </TabsContent>
+              <TabsContent value="list">
+                <div className="space-y-6 max-h-[800px] overflow-y-auto pr-2">
+                  {driverNames.map((driverName, index) => (
+                    <Card key={driverName} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 shadow-blue-500/10 hover:shadow-blue-500/20 border border-blue-200">
+                      <CardHeader className="py-6 bg-gradient-to-r from-gray-700 to-slate-600">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-2xl text-white font-bold">
+                            {driverName}
+                          </CardTitle>
+                          <span className="text-xl text-gray-200 font-medium">
+                            PDF #{index + 1}
+                          </span>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-0">
+                        <iframe
+                          src={`data:application/pdf;base64,${pdfData[driverName]}`}
+                          className="w-full h-[600px]"
+                          title={`PDF Preview - ${driverName}`}
+                        />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+        )}
+      </CardContent>
+
+      {step === 'preview' && (
+        <CardFooter className="flex justify-between p-8 border-t bg-gradient-to-r from-gray-50 to-white relative">
+          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-50" />
+          <Button 
+            variant="outline"
+            onClick={() => setStep('upload')}
+            disabled={loading}
+            className="border-gray-300 hover:bg-gray-50 text-gray-700 shadow-sm text-lg h-12 px-6"
+          >
+            <ArrowLeft className="mr-2 h-5 w-5" />
+            Back
+          </Button>
+          <Button 
+            onClick={handleConfirm}
+            disabled={loading}
+            className="bg-gradient-to-r from-gray-700 to-slate-600 hover:from-gray-600 hover:to-slate-500 text-white shadow-lg shadow-blue-500/20 transition-all hover:shadow-blue-500/30 text-lg h-12 px-6"
+          >
+            {loading ? (
               <>
-                <FileText className="h-6 w-6" />
-                Paystub Generator
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                Sending
               </>
             ) : (
               <>
-                <Mail className="h-6 w-6" />
-                Preview & Send Paystubs
+                <Mail className="mr-2 h-5 w-5" />
+                Send Emails ({totalPdfs})
               </>
             )}
-          </CardTitle>
-          <CardDescription className="text-indigo-100">
-            {step === 'upload' 
-              ? "Upload a CSV file to generate paystubs for your drivers"
-              : `Reviewing ${totalPdfs} generated paystubs`
-            }
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent className="p-6">
-          {error && (
-            <Alert className={`mb-4 ${error.startsWith('success:') ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-              <AlertTitle className={error.startsWith('success:') ? 'text-green-800' : 'text-red-800'}>
-                {error.startsWith('success:') ? 'Success' : 'Error'}
-              </AlertTitle>
-              <AlertDescription className={error.startsWith('success:') ? 'text-green-700' : 'text-red-700'}>
-                {error.replace('success:', '')}
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {step === 'upload' ? (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="flex items-center gap-4">
-                <Input
-                  type="file"
-                  accept=".xlsx"
-                  onChange={handleFileChange}
-                  className="flex-1 border-indigo-200 focus:ring-indigo-500"
-                />
-                <Button 
-                  type="submit" 
-                  disabled={loading || !file}
-                  className="min-w-[140px] bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="mr-2 h-4 w-4" />
-                      Process CSV
-                    </>
-                  )}
-                </Button>
-              </div>
-            </form>
-          ) : (
-            <div className="space-y-4">
-              <Tabs defaultValue="preview" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 bg-indigo-100">
-                  <TabsTrigger value="preview" className="data-[state=active]:bg-white data-[state=active]:text-indigo-700">
-                    Single View
-                  </TabsTrigger>
-                  <TabsTrigger value="list" className="data-[state=active]:bg-white data-[state=active]:text-indigo-700">
-                    List View
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="preview" className="space-y-4">
-                  <PreviewNavigation />
-                  <div className="border rounded-lg overflow-hidden bg-white shadow-md">
-                    <iframe
-                      src={`data:application/pdf;base64,${pdfData[driverNames[currentPreviewIndex]]}`}
-                      className="w-full h-[700px]"
-                      title={`PDF Preview - ${driverNames[currentPreviewIndex]}`}
-                    />
-                  </div>
-                </TabsContent>
-                <TabsContent value="list">
-                  <div className="space-y-4 max-h-[700px] overflow-y-auto pr-2">
-                    {driverNames.map((driverName, index) => (
-                      <Card key={driverName} className="overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                        <CardHeader className="py-3 bg-gradient-to-r from-indigo-50 to-purple-50">
-                          <CardTitle className="text-lg text-indigo-900">
-                            {driverName} (PDF {index + 1})
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0">
-                          <iframe
-                            src={`data:application/pdf;base64,${pdfData[driverName]}`}
-                            className="w-full h-[500px]"
-                            title={`PDF Preview - ${driverName}`}
-                          />
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </div>
-          )}
-        </CardContent>
-
-        {step === 'preview' && (
-          <CardFooter className="flex justify-between p-6 border-t bg-gradient-to-r from-indigo-50 to-purple-50">
-            <Button 
-              variant="outline"
-              onClick={() => setStep('upload')}
-              disabled={loading}
-              className="border-indigo-300 hover:bg-indigo-50 text-indigo-700"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Button>
-            <Button 
-              onClick={handleConfirm}
-              disabled={loading}
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Sending
-                </>
-              ) : (
-                <>
-                  <Mail className="mr-2 h-4 w-4" />
-                  Send Emails ({totalPdfs})
-                </>
-              )}
-            </Button>
-          </CardFooter>
-        )}
-      </Card>
-    </div>
+          </Button>
+        </CardFooter>
+      )}
+    </Card>
   </div>
+</div>
 );
 };
 
