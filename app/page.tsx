@@ -320,7 +320,6 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -332,9 +331,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 
 import { supabase } from '../lib/supabaseClient';
 
-interface PdfData {
-  [driverName: string]: string;
-}
+
 interface Driver {
   id?: number;
   name: string;
@@ -379,11 +376,6 @@ const Home = () => {
   const [isValidating, setIsValidating] = useState<boolean>(false);
 
   
-  const isSendButtonDisabled = (): boolean => {
-    if (loading || isValidating) return true;
-    if (!validationResult) return true;
-    return !validationResult.ready_to_send;
-  };
   
   
   useEffect(() => {
