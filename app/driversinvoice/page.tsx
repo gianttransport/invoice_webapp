@@ -165,7 +165,7 @@ const Home = () => {
     
 
     try {
-      const res = await fetch('http://my-flask-environment2.eba-jieg4cr7.us-east-1.elasticbeanstalk.com/process_excel/', {
+      const res = await fetch('https://invoicegen2-58e6551905ba.herokuapp.com/process_excel/', {
         method: 'POST',
         body: formData,
         credentials: 'omit',
@@ -192,7 +192,7 @@ const Home = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://my-flask-environment2.eba-jieg4cr7.us-east-1.elasticbeanstalk.com/send_email/', {
+      const res = await fetch('https://invoicegen2-58e6551905ba.herokuapp.com/send_email/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }, 
         body: JSON.stringify({ pdfs: pdfData }),
@@ -223,7 +223,7 @@ const Home = () => {
     setIsValidating(true);
 
     try {
-      const res = await fetch('http://my-flask-environment2.eba-jieg4cr7.us-east-1.elasticbeanstalk.com/validate_emails/', {
+      const res = await fetch('https://invoicegen2-58e6551905ba.herokuapp.com/validate_emails/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pdfs: pdfData }),
