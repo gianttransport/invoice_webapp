@@ -57,7 +57,7 @@ const Home = () => {
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [isValidating, setIsValidating] = useState<boolean>(false);
 
-  
+  const BACKEND_LINK = "https://giant-invoice-backend-17cc62c09e71.herokuapp.com/";
   
   
   useEffect(() => {
@@ -165,7 +165,7 @@ const Home = () => {
     
 
     try {
-      const res = await fetch('https://invoicegen2-58e6551905ba.herokuapp.com/process_excel/', {
+      const res = await fetch(BACKEND_LINK + 'process_excel/', {
         method: 'POST',
         body: formData,
         credentials: 'omit',
@@ -192,7 +192,7 @@ const Home = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('https://invoicegen2-58e6551905ba.herokuapp.com/send_email/', {
+      const res = await fetch(BACKEND_LINK + 'send_email/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }, 
         body: JSON.stringify({ pdfs: pdfData }),
@@ -223,7 +223,7 @@ const Home = () => {
     setIsValidating(true);
 
     try {
-      const res = await fetch('https://invoicegen2-58e6551905ba.herokuapp.com/validate_emails/', {
+      const res = await fetch(BACKEND_LINK + 'validate_emails/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pdfs: pdfData }),

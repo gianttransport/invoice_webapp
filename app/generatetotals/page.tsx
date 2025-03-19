@@ -76,7 +76,7 @@ const GenerateTotalsPage: React.FC = () => {
       files.forEach((file) => formData.append("files", file));
 
       // POINT THIS TO YOUR ACTUAL BACKEND ENDPOINT:
-      const res = await fetch("https://invoicegen2-58e6551905ba.herokuapp.com/process_excels_totals/", {
+      const res = await fetch("https://giant-invoice-backend-17cc62c09e71.herokuapp.com/process_excels_totals/", {
         method: "POST",
         body: formData,
       });
