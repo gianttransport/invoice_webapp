@@ -57,7 +57,10 @@ const Home = () => {
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [isValidating, setIsValidating] = useState<boolean>(false);
 
+  const [totalDrivers, setTotalDrivers] = useState<number>(0);
+
   const BACKEND_LINK = "https://giant-invoice-backend-17cc62c09e71.herokuapp.com/";
+  
   
   
   useEffect(() => {
@@ -74,6 +77,8 @@ const Home = () => {
       setError(error.message);
     } else {
       setDrivers(data || []);
+      const maxId = Math.max(...data.map(item => item.id))
+      setTotalDrivers(maxId);
     }
   };
 
@@ -103,6 +108,7 @@ const Home = () => {
       const { error } = await supabase
         .from('drivers')
         .insert([{
+          id: totalDrivers+1,
           name: normalizedDriver.name,
           email: normalizedDriver.email,
           pay_multiplier: normalizedDriver.pay_multiplier
